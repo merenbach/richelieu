@@ -1,0 +1,102 @@
+[
+    {
+        "rows": 9,
+        "cols": 17,
+        "limit": 0,
+        "cycle": true,
+        "input": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+        "output": [
+            "+-----------------+",
+            "|*o=*#X/X*#o /X00&|",
+            "|.===XX%*X##%XX=00|",
+            "| . BE*=/&**==..+B|",
+            "|   .o+*X0*++o .=+|",
+            "|   . . =S  +o+ +o|",
+            "|          ... =o+|",
+            "|             * o+|",
+            "|            . ...|",
+            "|                 |",
+            "+-----------------+"
+        ]
+    },
+    {
+        "rows": 9,
+        "cols": 17,
+        "limit": 0,
+        "cycle": false,
+        "input": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+        "output": [
+            "+-----------------+",
+            "|*o=*#X/X^#^^/X00&|",
+            "|.===XX%^X##%XX=00|",
+            "| . BE*=/&**==..+B|",
+            "|   .o+*X0*++o .=+|",
+            "|   . . =S  +o+ +o|",
+            "|          ... =o+|",
+            "|             * o+|",
+            "|            . ...|",
+            "|                 |",
+            "+-----------------+"
+        ]
+    },
+    {
+        "rows": 9,
+        "cols": 17,
+        "limit": 64,
+        "cycle": false,
+        "input": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+        "output": [
+            "+-----------------+",
+            "|oo.=*==*+o.      |",
+            "| .+...B=o.       |",
+            "|     ..E.        |",
+            "|      .. .       |",
+            "|        S        |",
+            "|                 |",
+            "|                 |",
+            "|                 |",
+            "|                 |",
+            "+-----------------+"
+        ]
+    },
+    {
+        "rows": 9,
+        "cols": 17,
+        "limit": 16,
+        "cycle": false,
+        "input": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+        "output": [
+            "+-----------------+",
+            "|      ..o..      |",
+            "|      Eo .       |",
+            "|     .  .        |",
+            "|       . .       |",
+            "|        S        |",
+            "|                 |",
+            "|                 |",
+            "|                 |",
+            "|                 |",
+            "+-----------------+"
+        ]
+    },
+    {
+        "rows": 9,
+        "cols": 17,
+        "limit": 1,
+        "cycle": false,
+        "input": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+        "output": [
+            "+-----------------+",
+            "|                 |",
+            "|                 |",
+            "|                 |",
+            "|         E       |",
+            "|        S        |",
+            "|                 |",
+            "|                 |",
+            "|                 |",
+            "|                 |",
+            "+-----------------+"
+        ]
+    }
+]
