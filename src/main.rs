@@ -13,7 +13,7 @@
 // limitations under the License.
 
 use clap::Parser;
-use drunken_bishop::DrunkenBishopBuilder;
+use drunken_bishop::{DrunkenBishopBuilder, DEFAULT_COLUMNS, DEFAULT_ROWS};
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -21,12 +21,22 @@ struct Args {
     /// Data to encode
     #[clap(short, long)]
     data: String,
+
+    /// Columns on the board
+    #[clap(short, long, default_value_t = DEFAULT_COLUMNS)]
+    columns: usize,
+
+    /// Rows on the board
+    #[clap(short, long, default_value_t = DEFAULT_ROWS)]
+    rows: usize,
 }
 
 fn main() {
     let args = Args::parse();
     let x = DrunkenBishopBuilder::default()
         .data(args.data.bytes().collect())
+        .columns(args.columns)
+        .rows(args.rows)
         .build()
         .unwrap();
     println!("{}", x);

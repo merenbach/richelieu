@@ -4,7 +4,7 @@ Rust-based implementation of the drunken bishop algorithm for fingerprint visual
 
 ## Getting started
 
-Run `cargo run INSERT_YOUR_TEXT_HERE` (inserting your text there) to try it out.
+Run `cargo run -- --data INSERT_YOUR_TEXT_HERE` (inserting your text there) to try it out.
 
 ## TODO
 

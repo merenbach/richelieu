@@ -1,7 +1,7 @@
 [
     {
         "rows": 9,
-        "cols": 17,
+        "columns": 17,
         "limit": 0,
         "cycle": true,
         "input": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
@@ -21,7 +21,7 @@
     },
     {
         "rows": 9,
-        "cols": 17,
+        "columns": 17,
         "limit": 0,
         "cycle": false,
         "input": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
@@ -41,7 +41,7 @@
     },
     {
         "rows": 9,
-        "cols": 17,
+        "columns": 17,
         "limit": 64,
         "cycle": false,
         "input": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
@@ -61,7 +61,7 @@
     },
     {
         "rows": 9,
-        "cols": 17,
+        "columns": 17,
         "limit": 16,
         "cycle": false,
         "input": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
@@ -81,7 +81,7 @@
     },
     {
         "rows": 9,
-        "cols": 17,
+        "columns": 17,
         "limit": 1,
         "cycle": false,
         "input": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",

@@ -27,9 +27,9 @@ use std::iter;
 //     }
 // }
 
+pub const DEFAULT_COLUMNS: usize = 17;
+pub const DEFAULT_ROWS: usize = 9;
 const DEFAULT_LIMIT: usize = 64;
-const DEFAULT_COLUMNS: usize = 17;
-const DEFAULT_ROWS: usize = 9;
 const DEFAULT_SYMBOLS: &str = " .o+=*B0X@%&#/^";
 
 /// Draw a frame around a grid of cells with a given row width.
@@ -43,11 +43,13 @@ fn frame(cells: &[char], width: usize) -> String {
     buf.push('+');
     buf.push('\n');
 
-    for row in cells.chunks(width) {
-        buf.push('|');
-        buf.extend(row);
-        buf.push('|');
-        buf.push('\n');
+    if width > 0 {
+        for row in cells.chunks(width) {
+            buf.push('|');
+            buf.extend(row);
+            buf.push('|');
+            buf.push('\n');
+        }
     }
 
     buf.push('+');
@@ -77,15 +79,6 @@ fn moves_from_byte(b: u8) -> Vec<Move> {
     (0..8).step_by(2).map(|i| b >> i).map(Move::from).collect()
 }
 
-fn incr_within_bounds(a: usize, lower_bound: usize, upper_bound: usize, negate: bool) -> usize {
-    if negate {
-        // up vs. down, constraining against borders
-        cmp::max(a, lower_bound + 1) - 1
-    } else {
-        cmp::min(a, upper_bound - 1) + 1
-    }
-}
-
 #[derive(Builder, Default)]
 #[builder(default)]
 pub struct DrunkenBishop {
@@ -95,6 +88,7 @@ pub struct DrunkenBishop {
     rows: usize,
     #[builder(default = "DEFAULT_COLUMNS")]
     columns: usize,
+
     #[builder(default = "DEFAULT_LIMIT")]
     limit: usize, // max number of moves to run (0 for unlimited; default is 64)
     #[builder(default = "DEFAULT_SYMBOLS.chars().collect()")]
@@ -119,8 +113,18 @@ impl DrunkenBishop {
             })
             // Apply moves to start position to create numeric sequence of visited cell positions
             .scan(self.position_to_coordinates(start_idx), |(x, y), m| {
-                *x = incr_within_bounds(*x, 0, self.columns - 1, !m.right);
-                *y = incr_within_bounds(*y, 0, self.rows - 1, !m.down);
+                if m.right {
+                    *x = cmp::min(x.saturating_add(1), self.columns - 1)
+                } else {
+                    *x = x.saturating_sub(1)
+                }
+
+                if m.down {
+                    *y = cmp::min(y.saturating_add(1), self.rows - 1)
+                } else {
+                    *y = y.saturating_sub(1)
+                }
+
                 Some(self.coordinates_to_position(*x, *y))
             })
             .collect()
@@ -128,13 +132,18 @@ impl DrunkenBishop {
 
     /// Render the grid into a string.
     fn render(&self) -> Vec<char> {
-        let start_idx = self.home.unwrap_or((self.rows * self.columns - 1) / 2);
+        let square_count = self.rows * self.columns;
+        if square_count == 0 {
+            return vec![];
+        }
+
+        let start_idx = self.home.unwrap_or((square_count - 1) / 2);
 
         let moves = self.moves(&self.data, start_idx);
         let cur_idx = moves.last().unwrap();
         let counts = moves.iter().counts();
 
-        (0..self.rows * self.columns)
+        (0..square_count)
             // Replace cell visit counts with symbols
             .map(|i| {
                 if i == start_idx {

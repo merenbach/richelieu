@@ -22,7 +22,7 @@ fn test_digest() {
     #[derive(Deserialize)]
     struct TestCase {
         rows: usize,
-        cols: usize,
+        columns: usize,
         limit: usize,
         cycle: bool,
         input: String,
@@ -34,7 +34,7 @@ fn test_digest() {
     for t in tables {
         let expected: String = t.output.iter().join("\n");
         let out = DrunkenBishopBuilder::default()
-            .columns(t.cols)
+            .columns(t.columns)
             .rows(t.rows)
             .data(t.input.bytes().collect())
             .limit(t.limit)
