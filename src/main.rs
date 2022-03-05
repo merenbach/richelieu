@@ -12,19 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use clap::Parser;
 use drunken_bishop::DrunkenBishopBuilder;
-use std::env;
+
+#[derive(Parser, Debug)]
+#[clap(author, version, about, long_about = None)]
+struct Args {
+    /// Data to encode
+    #[clap(short, long)]
+    data: String,
+}
 
 fn main() {
-    let args: Vec<_> = env::args().collect();
-    if args.len() != 2 {
-        println!("Usage: drunken-bishop TEXT");
-        return;
-    }
-
+    let args = Args::parse();
     let x = DrunkenBishopBuilder::default()
-        .limit(0)
-        .data(args[1].bytes().collect())
+        .data(args.data.bytes().collect())
         .build()
         .unwrap();
     println!("{}", x);
