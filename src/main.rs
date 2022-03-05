@@ -16,19 +16,16 @@ use drunken_bishop::DrunkenBishopBuilder;
 use std::env;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let args: Vec<_> = env::args().collect();
     if args.len() != 2 {
         println!("Usage: drunken-bishop TEXT");
         return;
     }
 
-    let msg = &args[1];
-
-    let out = DrunkenBishopBuilder::default()
+    let x = DrunkenBishopBuilder::default()
         .limit(0)
-        .data(msg.bytes().collect())
+        .data(args[1].bytes().collect())
         .build()
-        .unwrap()
-        .render();
-    println!("{}", out);
+        .unwrap();
+    println!("{}", x);
 }

@@ -86,7 +86,8 @@ fn incr_within_bounds(a: usize, lower_bound: usize, upper_bound: usize, negate: 
     }
 }
 
-#[derive(Builder)]
+#[derive(Builder, Default)]
+#[builder(default)]
 pub struct DrunkenBishop {
     data: Vec<u8>,
 
@@ -98,7 +99,7 @@ pub struct DrunkenBishop {
     limit: usize, // max number of moves to run (0 for unlimited; default is 64)
     #[builder(default = "DEFAULT_SYMBOLS.chars().collect()")]
     symbols: Vec<char>,
-    #[builder(setter(strip_option), default)]
+    #[builder(setter(strip_option))]
     home: Option<usize>, // starting location in the grid
     cycle: bool, // whether to cycle symbols or only go as far as the last
 }
@@ -126,14 +127,14 @@ impl DrunkenBishop {
     }
 
     /// Render the grid into a string.
-    pub fn render(&self) -> String {
+    fn render(&self) -> Vec<char> {
         let start_idx = self.home.unwrap_or((self.rows * self.columns - 1) / 2);
 
         let moves = self.moves(&self.data, start_idx);
         let cur_idx = moves.last().unwrap();
         let counts = moves.iter().counts();
 
-        let output: Vec<_> = (0..self.rows * self.columns)
+        (0..self.rows * self.columns)
             // Replace cell visit counts with symbols
             .map(|i| {
                 if i == start_idx {
@@ -150,9 +151,7 @@ impl DrunkenBishop {
                     }
                 }
             })
-            .collect();
-
-        frame(&output, self.columns)
+            .collect()
     }
 
     /// Convert (x, y) coordinates to a position in the grid.
@@ -173,6 +172,6 @@ impl fmt::Display for DrunkenBishop {
         // stream: `f`. Returns `fmt::Result` which indicates whether the
         // operation succeeded or failed. Note that `write!` uses syntax which
         // is very similar to `println!`.
-        write!(f, "{}", self.render())
+        write!(f, "{}", frame(&self.render(), self.columns))
     }
 }

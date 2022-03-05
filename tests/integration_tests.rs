@@ -32,7 +32,7 @@ fn test_digest() {
     let tables: Vec<TestCase> = read_data_from_file("testdata/digest.json").unwrap();
 
     for t in tables {
-        let output: String = t.output.iter().join("\n");
+        let expected: String = t.output.iter().join("\n");
         let out = DrunkenBishopBuilder::default()
             .columns(t.cols)
             .rows(t.rows)
@@ -40,8 +40,7 @@ fn test_digest() {
             .limit(t.limit)
             .cycle(t.cycle)
             .build()
-            .unwrap()
-            .render();
-        assert_eq!(out, output);
+            .unwrap();
+        assert_eq!(expected, format!("{}", out));
     }
 }
