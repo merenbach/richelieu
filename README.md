@@ -4,7 +4,27 @@ Rust-based implementation of the drunken bishop algorithm for fingerprint visual
 
 ## Getting started
 
-Run `cargo run -- --data INSERT_YOUR_TEXT_HERE` (inserting your text there) to try it out.
+The only required option is `--data` (or `-d`), containing data to encode. Run with the `--help` option to see other flags. An example run might look like this:
+
+    $ richelieu --data 'Hello, world!'
+    +-----------------+
+    |       oE ..     |
+    |    . oo*.o      |
+    |     o.= B       |
+    |     . .o X      |
+    |      . SB       |
+    |                 |
+    |                 |
+    |                 |
+    |                 |
+    +-----------------+
+
+Note that the program does not currently include any hashing. Consider hashing data before feeding it to the drunken bishop.
+
+## Links
+
+- <https://www.jfurness.uk/the-drunken-bishop-algorithm/>
+- <https://pthree.org/2013/05/30/openssh-keys-and-the-drunken-bishop/>
 
 ## TODO
 

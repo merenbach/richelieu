@@ -43,3 +43,11 @@ where
     // Return the `User`.
     Ok(u)
 }
+
+// /// Hitmap of cell visits.
+// fn hitmap(size: usize, data: &[usize]) -> Vec<usize> {
+//     data.iter().fold(vec![0; size], |mut vec, &x| {
+//         vec[x] += 1;
+//         vec
+//     })
+// }

@@ -23,7 +23,7 @@ fn test_digest() {
     struct TestCase {
         rows: usize,
         columns: usize,
-        limit: usize,
+        steps: usize,
         cycle: bool,
         input: String,
         output: Vec<String>,
@@ -37,7 +37,7 @@ fn test_digest() {
             .columns(t.columns)
             .rows(t.rows)
             .data(t.input.bytes().collect())
-            .limit(t.limit)
+            .steps(t.steps)
             .cycle(t.cycle)
             .build()
             .unwrap();

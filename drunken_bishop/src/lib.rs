@@ -27,9 +27,9 @@ use std::iter;
 //     }
 // }
 
-pub const DEFAULT_COLUMNS: usize = 17;
-pub const DEFAULT_ROWS: usize = 9;
-const DEFAULT_LIMIT: usize = 64;
+pub const STANDARD_COLUMNS: usize = 17;
+pub const STANDARD_ROWS: usize = 9;
+pub const STANDARD_STEPS: usize = 64;
 const DEFAULT_SYMBOLS: &str = " .o+=*B0X@%&#/^";
 
 /// Draw a frame around a grid of cells with a given row width.
@@ -82,20 +82,33 @@ fn moves_from_byte(b: u8) -> Vec<Move> {
 #[derive(Builder, Default)]
 #[builder(default)]
 pub struct DrunkenBishop {
+    /// Data to digest into steps for the bishop
     data: Vec<u8>,
 
-    #[builder(default = "DEFAULT_ROWS")]
+    /// Rows on the board
     rows: usize,
-    #[builder(default = "DEFAULT_COLUMNS")]
+
+    /// Columns on the board
     columns: usize,
 
-    #[builder(default = "DEFAULT_LIMIT")]
-    limit: usize, // max number of moves to run (0 for unlimited; default is 64)
-    #[builder(default = "DEFAULT_SYMBOLS.chars().collect()")]
+    /// Steps for the bishop to take, or 0 for unlimited
+    steps: usize,
+
+    #[builder(setter(skip), default = "DEFAULT_SYMBOLS.chars().collect()")]
     symbols: Vec<char>,
-    #[builder(setter(strip_option))]
+    #[builder(setter(skip, strip_option))]
     home: Option<usize>, // starting location in the grid
-    cycle: bool, // whether to cycle symbols or only go as far as the last
+    cycle: bool, // whether to recycle symbols or only go as far as the last
+}
+
+/// Convert (x, y) coordinates to a position in a grid.
+fn coordinates_to_position(columns: usize, x: usize, y: usize) -> usize {
+    y * columns + x
+}
+
+/// Convert a grid position in to (x, y) coordinates.
+fn position_to_coordinates(columns: usize, i: usize) -> (usize, usize) {
+    (i % columns, i / columns)
 }
 
 impl DrunkenBishop {
@@ -105,28 +118,31 @@ impl DrunkenBishop {
             // Convert message bytes to sequence of move instructions
             .flat_map(|&b| moves_from_byte(b))
             // Constrain sequence of visited cells to the desired number of moves
-            .take(if self.limit == 0 {
+            .take(if self.steps == 0 {
                 // four moves per byte multiplied by byte length of message
                 4 * data.len()
             } else {
-                self.limit
+                self.steps
             })
             // Apply moves to start position to create numeric sequence of visited cell positions
-            .scan(self.position_to_coordinates(start_idx), |(x, y), m| {
-                if m.right {
-                    *x = cmp::min(x.saturating_add(1), self.columns - 1)
-                } else {
-                    *x = x.saturating_sub(1)
-                }
+            .scan(
+                position_to_coordinates(self.columns, start_idx),
+                |(x, y), m| {
+                    if m.right {
+                        *x = cmp::min(x.saturating_add(1), self.columns - 1)
+                    } else {
+                        *x = x.saturating_sub(1)
+                    }
 
-                if m.down {
-                    *y = cmp::min(y.saturating_add(1), self.rows - 1)
-                } else {
-                    *y = y.saturating_sub(1)
-                }
+                    if m.down {
+                        *y = cmp::min(y.saturating_add(1), self.rows - 1)
+                    } else {
+                        *y = y.saturating_sub(1)
+                    }
 
-                Some(self.coordinates_to_position(*x, *y))
-            })
+                    Some(coordinates_to_position(self.columns, *x, *y))
+                },
+            )
             .collect()
     }
 
@@ -161,16 +177,6 @@ impl DrunkenBishop {
                 }
             })
             .collect()
-    }
-
-    /// Convert (x, y) coordinates to a position in the grid.
-    fn coordinates_to_position(&self, x: usize, y: usize) -> usize {
-        y * self.columns + x
-    }
-
-    /// Convert a position in the grid to (x, y).
-    fn position_to_coordinates(&self, v: usize) -> (usize, usize) {
-        (v % self.columns, v / self.columns)
     }
 }
 
