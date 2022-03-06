@@ -59,24 +59,75 @@ fn frame(cells: &[char], width: usize) -> String {
     buf
 }
 
-struct Move {
-    right: bool,
-    down: bool,
+/// A step for the bishop to take.
+enum Step {
+    /// northwest (up and left)
+    NW,
+    /// northeast (up and right)
+    NE,
+    /// southwest (down and left)
+    SW,
+    /// southeast (down and right)
+    SE,
 }
 
-impl From<u8> for Move {
+impl Step {
+    /// East returns `true` if there is an eastward component to this step,
+    /// `false` otherwise.
+    fn east(&self) -> bool {
+        match self {
+            Step::NW => false,
+            Step::NE => true,
+            Step::SW => false,
+            Step::SE => true,
+        }
+    }
+
+    /// South returns `true` if there is a southward component to this step,
+    /// `false` otherwise.
+    fn south(&self) -> bool {
+        match self {
+            Step::NW => false,
+            Step::NE => false,
+            Step::SW => true,
+            Step::SE => true,
+        }
+    }
+
+    /// Horizontal transformation on a given coordinate.
+    pub fn horizontal(&self, x: usize) -> usize {
+        if self.east() {
+            x.saturating_add(1)
+        } else {
+            x.saturating_sub(1)
+        }
+    }
+
+    /// Vertical transformation on a given coordinate.
+    pub fn vertical(&self, y: usize) -> usize {
+        if self.south() {
+            y.saturating_add(1)
+        } else {
+            y.saturating_sub(1)
+        }
+    }
+}
+
+impl From<u8> for Step {
     fn from(v: u8) -> Self {
-        // v & 0b11
-        Move {
-            right: v & 0b01 != 0,
-            down: v & 0b10 != 0,
+        match v & 0b11 {
+            0b00 => Step::NW,
+            0b01 => Step::NE,
+            0b10 => Step::SW,
+            0b11 => Step::SE,
+            _ => unreachable!("Last two bits will always yield one of four values"),
         }
     }
 }
 
 // This is more testable if it's broken out
-fn moves_from_byte(b: u8) -> Vec<Move> {
-    (0..8).step_by(2).map(|i| b >> i).map(Move::from).collect()
+fn moves_from_byte(b: u8) -> Vec<Step> {
+    (0..8).step_by(2).map(|i| b >> i).map(Step::from).collect()
 }
 
 #[derive(Builder, Default)]
@@ -128,18 +179,8 @@ impl DrunkenBishop {
             .scan(
                 position_to_coordinates(self.columns, start_idx),
                 |(x, y), m| {
-                    if m.right {
-                        *x = cmp::min(x.saturating_add(1), self.columns - 1)
-                    } else {
-                        *x = x.saturating_sub(1)
-                    }
-
-                    if m.down {
-                        *y = cmp::min(y.saturating_add(1), self.rows - 1)
-                    } else {
-                        *y = y.saturating_sub(1)
-                    }
-
+                    *x = cmp::min(self.columns - 1, m.horizontal(*x));
+                    *y = cmp::min(self.rows - 1, m.vertical(*y));
                     Some(coordinates_to_position(self.columns, *x, *y))
                 },
             )
