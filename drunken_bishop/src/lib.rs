@@ -95,9 +95,9 @@ pub struct DrunkenBishop {
 }
 
 impl DrunkenBishop {
-    /// Moves that will be performed with the grid.
-    fn moves(&self, data: &[u8], start_idx: usize) -> Vec<usize> {
-        steps_from_bytes(data, self.steps)
+    /// Trace a route for the bishop based on byte data.
+    fn trace(&self, start_idx: usize) -> Vec<usize> {
+        steps_from_bytes(&self.data, self.steps)
             .iter()
             // Apply moves to start position to create numeric sequence of visited cell positions
             .scan(
@@ -121,7 +121,7 @@ impl DrunkenBishop {
             _ => {
                 let start_idx = self.home.unwrap_or((square_count - 1) / 2);
 
-                let moves = self.moves(&self.data, start_idx);
+                let moves = self.trace(start_idx);
                 let cur_idx = moves.last().unwrap();
                 let counts = moves.iter().counts();
 
