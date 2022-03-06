@@ -149,34 +149,36 @@ impl DrunkenBishop {
     /// Render the grid into a string.
     fn render(&self) -> Vec<char> {
         let square_count = self.rows * self.columns;
-        if square_count == 0 {
-            return vec![];
+        match square_count {
+            0 => vec![],
+            1 => vec!['S'],
+            _ => {
+                let start_idx = self.home.unwrap_or((square_count - 1) / 2);
+
+                let moves = self.moves(&self.data, start_idx);
+                let cur_idx = moves.last().unwrap();
+                let counts = moves.iter().counts();
+
+                (0..square_count)
+                    // Replace cell visit counts with symbols
+                    .map(|i| {
+                        if i == start_idx {
+                            'S'
+                        } else if i == *cur_idx {
+                            'E'
+                        } else {
+                            let n = counts.get(&i).unwrap_or(&0);
+                            let symbol_len = self.symbols.len();
+                            if *n < symbol_len || self.cycle {
+                                self.symbols[n % symbol_len]
+                            } else {
+                                *self.symbols.last().unwrap()
+                            }
+                        }
+                    })
+                    .collect()
+            }
         }
-
-        let start_idx = self.home.unwrap_or((square_count - 1) / 2);
-
-        let moves = self.moves(&self.data, start_idx);
-        let cur_idx = moves.last().unwrap();
-        let counts = moves.iter().counts();
-
-        (0..square_count)
-            // Replace cell visit counts with symbols
-            .map(|i| {
-                if i == start_idx {
-                    'S'
-                } else if i == *cur_idx {
-                    'E'
-                } else {
-                    let n = counts.get(&i).unwrap_or(&0);
-                    let symbol_len = self.symbols.len();
-                    if *n < symbol_len || self.cycle {
-                        self.symbols[n % symbol_len]
-                    } else {
-                        *self.symbols.last().unwrap()
-                    }
-                }
-            })
-            .collect()
     }
 }
 
