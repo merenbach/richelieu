@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+mod step;
+
 use core::cmp;
 use derive_builder::Builder;
 use itertools::Itertools;
 use std::fmt;
 use std::iter;
+use step::steps_from_bytes;
 
 // #[cfg(test)]
 // mod tests {
@@ -59,75 +62,14 @@ fn frame(cells: &[char], width: usize) -> String {
     buf
 }
 
-/// A step for the bishop to take.
-enum Step {
-    /// northwest (up and left)
-    NW,
-    /// northeast (up and right)
-    NE,
-    /// southwest (down and left)
-    SW,
-    /// southeast (down and right)
-    SE,
+/// Convert (x, y) coordinates to a position in a grid.
+fn coordinates_to_position(columns: usize, x: usize, y: usize) -> usize {
+    y * columns + x
 }
 
-impl Step {
-    /// East returns `true` if there is an eastward component to this step,
-    /// `false` otherwise.
-    fn east(&self) -> bool {
-        match self {
-            Step::NW => false,
-            Step::NE => true,
-            Step::SW => false,
-            Step::SE => true,
-        }
-    }
-
-    /// South returns `true` if there is a southward component to this step,
-    /// `false` otherwise.
-    fn south(&self) -> bool {
-        match self {
-            Step::NW => false,
-            Step::NE => false,
-            Step::SW => true,
-            Step::SE => true,
-        }
-    }
-
-    /// Horizontal transformation on a given coordinate.
-    pub fn horizontal(&self, x: usize) -> usize {
-        if self.east() {
-            x.saturating_add(1)
-        } else {
-            x.saturating_sub(1)
-        }
-    }
-
-    /// Vertical transformation on a given coordinate.
-    pub fn vertical(&self, y: usize) -> usize {
-        if self.south() {
-            y.saturating_add(1)
-        } else {
-            y.saturating_sub(1)
-        }
-    }
-}
-
-impl From<u8> for Step {
-    fn from(v: u8) -> Self {
-        match v & 0b11 {
-            0b00 => Step::NW,
-            0b01 => Step::NE,
-            0b10 => Step::SW,
-            0b11 => Step::SE,
-            _ => unreachable!("Last two bits will always yield one of four values"),
-        }
-    }
-}
-
-// This is more testable if it's broken out
-fn moves_from_byte(b: u8) -> Vec<Step> {
-    (0..8).step_by(2).map(|i| b >> i).map(Step::from).collect()
+/// Convert a grid position in to (x, y) coordinates.
+fn position_to_coordinates(columns: usize, i: usize) -> (usize, usize) {
+    (i % columns, i / columns)
 }
 
 #[derive(Builder, Default)]
@@ -152,35 +94,18 @@ pub struct DrunkenBishop {
     cycle: bool, // whether to recycle symbols or only go as far as the last
 }
 
-/// Convert (x, y) coordinates to a position in a grid.
-fn coordinates_to_position(columns: usize, x: usize, y: usize) -> usize {
-    y * columns + x
-}
-
-/// Convert a grid position in to (x, y) coordinates.
-fn position_to_coordinates(columns: usize, i: usize) -> (usize, usize) {
-    (i % columns, i / columns)
-}
-
 impl DrunkenBishop {
     /// Moves that will be performed with the grid.
     fn moves(&self, data: &[u8], start_idx: usize) -> Vec<usize> {
-        data.iter()
-            // Convert message bytes to sequence of move instructions
-            .flat_map(|&b| moves_from_byte(b))
-            // Constrain sequence of visited cells to the desired number of moves
-            .take(if self.steps == 0 {
-                // four moves per byte multiplied by byte length of message
-                4 * data.len()
-            } else {
-                self.steps
-            })
+        steps_from_bytes(data, self.steps)
+            .iter()
             // Apply moves to start position to create numeric sequence of visited cell positions
             .scan(
                 position_to_coordinates(self.columns, start_idx),
                 |(x, y), m| {
-                    *x = cmp::min(self.columns - 1, m.horizontal(*x));
-                    *y = cmp::min(self.rows - 1, m.vertical(*y));
+                    let (a, b) = m.transform(*x, *y);
+                    *x = cmp::min(self.columns - 1, a);
+                    *y = cmp::min(self.rows - 1, b);
                     Some(coordinates_to_position(self.columns, *x, *y))
                 },
             )
