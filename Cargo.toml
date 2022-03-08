@@ -1,6 +1,6 @@
 [package]
 authors = ["Andrew Merenbach <andrew@merenbach.com>"]
-edition = "2018"
+edition = "2021"
 name = "richelieu"
 version = "0.1.0"
 
