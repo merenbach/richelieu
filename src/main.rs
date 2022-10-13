@@ -16,22 +16,22 @@ use clap::Parser;
 use drunken_bishop::{DrunkenBishopBuilder, STANDARD_COLUMNS, STANDARD_ROWS, STANDARD_STEPS};
 
 #[derive(Parser, Debug)]
-#[clap(author, version, about, long_about = None)]
+#[command(author, version, about, long_about = None)]
 struct Args {
     /// Data to digest into steps for the bishop
-    #[clap(short, long)]
+    #[arg(short, long)]
     data: String,
 
     /// Columns on the board
-    #[clap(short, long, default_value_t = STANDARD_COLUMNS)]
+    #[arg(short, long, default_value_t = STANDARD_COLUMNS)]
     columns: usize,
 
     /// Rows on the board
-    #[clap(short, long, default_value_t = STANDARD_ROWS)]
+    #[arg(short, long, default_value_t = STANDARD_ROWS)]
     rows: usize,
 
     /// Steps for the bishop to take, or 0 for unlimited
-    #[clap(short, long, default_value_t = STANDARD_STEPS)]
+    #[arg(short, long, default_value_t = STANDARD_STEPS)]
     steps: usize,
 }
 

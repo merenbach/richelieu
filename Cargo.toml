@@ -13,7 +13,7 @@ members = [
 ]
 
 [dependencies]
-clap = {version = "3.2.22", features = ["derive", "cargo"]}
+clap = {version = "4.0.14", features = ["derive"]}
 drunken_bishop = {path = "drunken_bishop"}
 itertools = "0.10.5"
 serde = "1.0.145"
