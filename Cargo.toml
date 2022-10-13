@@ -13,8 +13,8 @@ members = [
 ]
 
 [dependencies]
-clap = {version = "3.1.5", features = ["derive", "cargo"]}
+clap = {version = "3.2.22", features = ["derive", "cargo"]}
 drunken_bishop = {path = "drunken_bishop"}
-itertools = "0.10.3"
-serde = "1.0"
+itertools = "0.10.5"
+serde = "1.0.145"
 std_ext = {path = "std_ext"}

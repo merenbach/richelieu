@@ -56,10 +56,11 @@ impl Step {
 impl From<u8> for Step {
     fn from(v: u8) -> Self {
         match v & 0b11 {
-            0b00 => Step::NW,
-            0b01 => Step::NE,
-            0b10 => Step::SW,
-            0b11 => Step::SE,
+            // &0b11 is the same here (with unsigned type) as %4
+            0b00 => Step::NW, // same as == 0
+            0b01 => Step::NE, // same as == 1
+            0b10 => Step::SW, // same as == 2
+            0b11 => Step::SE, // same as == 3
             _ => unreachable!("Last two bits will always yield one of four values"),
         }
     }
