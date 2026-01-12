@@ -40,7 +40,7 @@ where
     // Read the JSON contents of the file as an instance of `T`.
     let u = serde_json::from_reader(reader)?;
 
-    // Return the `User`.
+    // Return the instance of `T`.
     Ok(u)
 }
 
