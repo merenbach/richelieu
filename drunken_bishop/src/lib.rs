@@ -67,7 +67,7 @@ fn coordinates_to_position(columns: usize, x: usize, y: usize) -> usize {
     y * columns + x
 }
 
-/// Convert a grid position in to (x, y) coordinates.
+/// Convert a grid position into (x, y) coordinates.
 fn position_to_coordinates(columns: usize, i: usize) -> (usize, usize) {
     (i % columns, i / columns)
 }
